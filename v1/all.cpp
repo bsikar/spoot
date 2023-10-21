@@ -154,7 +154,7 @@ void SpotifyAuthController::redirectToSpotifyAuth(
     return;
   }
 
-  std::string redirect_uri = "http://localhost:5555/host";
+  std::string redirect_uri = "http://localhost:3000/play";
   std::string scopes = "user-top-read";
 
   std::string spotify_auth_url =
@@ -190,7 +190,7 @@ void SpotifyHostController::showSpotifyData(
   std::ostringstream bodyStream;
   bodyStream << "grant_type=authorization_code";
   bodyStream << "&redirect_uri="
-             << "http://localhost:5555/host";
+             << "http://localhost:3000/play";
   bodyStream << "&code=" << code;
 
   req2->setBody(bodyStream.str());
