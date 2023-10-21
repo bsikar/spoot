@@ -24,24 +24,7 @@ int main(void) {
   LOG_INFO << "Using version " << VERSION;
   drogon::app().addListener("0.0.0.0", 5555);
   drogon::app().createRedisClient("127.0.0.1", 6379);
-  // drogon::app().registerBeginningAdvice(clearUserColors);
-  drogon::app().registerPreRoutingAdvice(
-      [](const drogon::HttpRequestPtr &req, drogon::AdviceCallback &&acb,
-         drogon::AdviceChainCallback &&accb) {
-        auto resp = drogon::HttpResponse::newHttpResponse();
-        resp->addHeader("Access-Control-Allow-Origin", "*");
-        resp->addHeader("Access-Control-Allow-Methods", "*");
-        resp->addHeader("Access-Control-Allow-Headers", "*");
-
-        if (req->getMethod() == drogon::Options) {
-          resp->setStatusCode(drogon::k200OK);
-
-          acb(resp);
-          return;
-        }
-
-        accb();
-      });
+  drogon::app().registerBeginningAdvice(clearUserColors);
 
   drogon::app().run();
 
