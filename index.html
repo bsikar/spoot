@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Button Press App</title>
+    <script>
+      async function checkAndSubmitName() {
+        const nameInput = document.getElementById("userName");
+        const name = nameInput.value.trim();
+
+        if (name.length === 0 || name.length > 12) {
+          alert("Name should be between 1 and 12 characters.");
+          return;
+        }
+
+        // Check if name exists in the backend
+        const response = await fetch(`/check_name?name=${name}`);
+
+        if (response.status === 200) {
+          // Hide name input and show buttons
+          document.getElementById("nameSection").style.display = "none";
+          document.getElementById("buttonsSection").style.display = "block";
+          startWebSocket(name); // Start WebSocket connection with name as argument
+        } else if (response.status === 404) {
+          alert("Name is already taken. Choose another.");
+        } else {
+          alert("Error occurred. Please try again.");
+        }
+      }
+
+      function startWebSocket(userName) {
+        let ws = new WebSocket(`ws://localhost:5555/buttons?name=${userName}`);
+
+        ws.onopen = function (event) {
+          console.log("Connected to Drogon backend!");
+        };
+
+        ws.onerror = function (error) {
+          console.error(`WebSocket Error: ${error}`);
+        };
+
+        window.sendMessage = function (color) {
+          console.log("sending " + color);
+          ws.send(color);
+        };
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id="nameSection">
+      <input type="text" id="userName" placeholder="Enter your name" />
+      <button onclick="checkAndSubmitName()">Submit</button>
+    </div>
+
+    <div id="buttonsSection" style="display: none">
+      <button style="background-color: red" onclick="sendMessage('red')">
+        Red
+      </button>
+      <button style="background-color: blue" onclick="sendMessage('blue')">
+        Blue
+      </button>
+      <button style="background-color: green" onclick="sendMessage('green')">
+        Green
+      </button>
+      <button style="background-color: yellow" onclick="sendMessage('yellow')">
+        Yellow
+      </button>
+      <button style="background-color: orange" onclick="sendMessage('orange')">
+        Orange
+      </button>
+      <button style="background-color: purple" onclick="sendMessage('purple')">
+        Purple
+      </button>
+    </div>
+  </body>
+</html>
