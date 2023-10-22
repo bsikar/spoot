@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../v1/all.hpp"
 #include <drogon/HttpController.h>
 #include <drogon/WebSocketController.h>
 #include <drogon/drogon.h>
@@ -8,14 +7,15 @@
 #include <string>
 
 namespace v2 {
-using namespace v1;
 
 class SpotifyHostController
     : public drogon::HttpController<SpotifyHostController> {
 public:
   METHOD_LIST_BEGIN
-  ADD_METHOD_TO(SpotifyHostController::getSpotCreds, "/get_creds", drogon::Get);
-  ADD_METHOD_TO(SpotifyHostController::topArtists, "/top_artists", drogon::Get);
+  ADD_METHOD_TO(SpotifyHostController::getSpotCreds, "/get_creds", drogon::Get,
+                drogon::Options);
+  ADD_METHOD_TO(SpotifyHostController::topArtists, "/top_artists", drogon::Get,
+                drogon::Options);
   METHOD_LIST_END
 
   void
@@ -39,11 +39,19 @@ class SpotifyAuthController
 public:
   METHOD_LIST_BEGIN
   ADD_METHOD_TO(SpotifyAuthController::redirectToSpotifyAuth, "/login",
-                drogon::Get);
+                drogon::Get, drogon::Options);
   METHOD_LIST_END
 
   void redirectToSpotifyAuth(
       const drogon::HttpRequestPtr &req,
       std::function<void(const drogon::HttpResponsePtr &)> &&callback);
 };
+
+class CorsFilter : public drogon::HttpFilter<CorsFilter> {
+public:
+  virtual void doFilter(const drogon::HttpRequestPtr &req,
+                        drogon::FilterCallback &&fcb,
+                        drogon::FilterChainCallback &&fccb) override;
+};
+
 } // namespace v2

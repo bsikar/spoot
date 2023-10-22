@@ -1,0 +1,55 @@
+.header h1 {
+  text-align: center;
+  font-size: 1.5rem; /* Adjusted to 24px */
+  font-weight: 700;
+  color: hsl(129, 30%, 67%);
+  text-transform: uppercase;
+  word-spacing: 0.0625rem; /* Adjusted to 1px */
+  letter-spacing: 0.125rem; /* Adjusted to 2px */
+  margin-top: 8rem; /* Increased to 128px */
+}
+
+.header h1 span {
+  margin-top: 4rem; /* Increased to 64px */
+
+  text-transform: none;
+  font-size: 0.625rem; /* Adjusted to 10px */
+  font-weight: normal;
+  font-style: italic;
+  font-family: "Playfair Display", "Bookman", serif;
+  color: #999;
+  letter-spacing: -0.005em;
+  word-spacing: 0.0625rem; /* Adjusted to 1px */
+  letter-spacing: normal;
+}
+
+.header h1:before {
+  position: absolute;
+
+  left: 50%;
+  bottom: 1rem; /* Adjusted to 16px */
+  width: 3.75rem; /* Adjusted to 60px */
+  height: 0.25rem; /* Adjusted to 4px */
+  content: "";
+
+  transform: translateX(-50%);
+  background-color: #dfdfdf;
+}
+
+@media only screen and (max-width: 768px) {
+  .header h1 {
+    font-size: 1.25rem; /* Adjusted to 20px */
+    margin-top: 6rem; /* Increased to 96px */
+  }
+
+  .header h1 span {
+    margin-top: 3rem; /* Increased to 48px */
+    font-size: 0.5rem; /* Adjusted to 8px */
+  }
+
+  .header h1:before {
+    bottom: 0.75rem; /* Adjusted to 12px */
+    width: 2.5rem; /* Adjusted to 40px */
+    height: 0.125rem; /* Adjusted to 2px */
+  }
+}

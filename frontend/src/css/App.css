@@ -1,0 +1,15 @@
+@font-face {
+  font-family: "APL385";
+  src: url("./fonts/APL385.TTF") format("truetype");
+}
+
+* {
+  font-family: "APL385", fallback-font, sans-serif;
+  font-size: 26px;
+  text-align: center;
+  align-items: center;
+}
+
+Body {
+  background: rgba(88, 119, 93, 0.9);
+}
