@@ -93,7 +93,6 @@ const Play = () => {
             onClick={() => handleClick(pops[0] >= pops[1])}
           >
             <img className="img" src={images[0]} alt={artists[0]} />
-
             <p>{artists[0]}</p>
           </button>
           <div className="green-square">{showPopularity ? pops[0] : null}</div>

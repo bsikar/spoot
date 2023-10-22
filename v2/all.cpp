@@ -81,6 +81,10 @@ void SpotifyHostController::topArtists(
   LOG_TRACE << "Entering topArtists";
   auto client = HttpClient::newHttpClient(SPOT_API_URI);
   auto copied_callback = callback; // Make a copy of the callback
+  auto diff = req->getParameter("difficulty");
+  if (!diff.empty() && diff != "undefined") {
+    difficulty_level = diff;
+  }
 
   std::string time_range = "long_term";
   int limit = 50;
@@ -95,6 +99,7 @@ void SpotifyHostController::topArtists(
   std::ostringstream oss;
   oss << "/v1/me/top/artists?"
       << "time_range=" << time_range << "&limit=" << limit << "&offset=0";
+  LOG_INFO << oss.str();
 
   auto spotify_req = makeRequest(req, copied_callback, oss.str());
   if (!spotify_req) {
@@ -126,6 +131,7 @@ void SpotifyHostController::topArtists(
 
             // Setting body with the contents in the form of json
             Json::StreamWriterBuilder writer_builder;
+            LOG_INFO << Json::writeString(writer_builder, json_data_array);
             resp->setBody(Json::writeString(writer_builder, json_data_array));
           } else {
             std::string error_message =
