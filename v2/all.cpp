@@ -6,12 +6,13 @@ using drogon::HttpResponsePtr;
 
 const char *SPOT_API_URI = "https://api.spotify.com";
 const char *SPOT_USER_URI = "https://accounts.spotify.com";
-const char *SPOT_REDIRECT_URI = "http://localhost:3000/play";
+const char *SPOT_REDIRECT_URI1 = "http://localhost:5555/get_creds";
+const char *SPOT_REDIRECT_URI2 = "http://localhost:3000/play";
 
 #define SPOT_USER_FULL_REDIRECT_URI(client_id, scopes)                         \
   std::string(SPOT_USER_URI) + "/authorize?response_type=code" +               \
       "&client_id=" + client_id + "&scope=" + scopes +                         \
-      "&redirect_uri=" + SPOT_REDIRECT_URI
+      "&redirect_uri=" + SPOT_REDIRECT_URI1
 
 namespace v2 {
 
@@ -19,7 +20,6 @@ std::optional<HttpRequestPtr> SpotifyHostController::makeRequest(
     const HttpRequestPtr &req,
     std::function<void(const HttpResponsePtr &)> callback,
     const std::string &path) {
-  const auto access_token = req->getParameter("access_token");
 
   if (access_token.empty()) {
     auto resp = drogon::HttpResponse::newHttpResponse();
@@ -124,7 +124,7 @@ void SpotifyHostController::getSpotCreds(
 
   std::ostringstream body_stream;
   body_stream << "grant_type=authorization_code";
-  body_stream << "&redirect_uri=" << SPOT_REDIRECT_URI;
+  body_stream << "&redirect_uri=" << SPOT_REDIRECT_URI2;
   body_stream << "&code=" << code;
 
   token_request->setBody(body_stream.str());
@@ -135,11 +135,23 @@ void SpotifyHostController::getSpotCreds(
   token_request->addHeader("Authorization", auth_header);
 
   client->sendRequest(
-      token_request, [callback](drogon::ReqResult result,
-                                const drogon::HttpResponsePtr &response) {
+      token_request, [this, callback](drogon::ReqResult result,
+                                      const drogon::HttpResponsePtr &response) {
         if (result == drogon::ReqResult::Ok) {
           auto resp = drogon::HttpResponse::newHttpResponse();
-          resp->setBody(std::string(response->getBody()));
+
+          Json::Reader reader;
+          Json::Value json_data;
+          if (reader.parse(std::string(response->getBody()), json_data)) {
+            this->access_token = json_data["access_token"].asString();
+            resp->setBody(json_data.toStyledString());
+          } else {
+            std::string error_message =
+                R"({"error": "Failed to parse Spotify response"})";
+            LOG_ERROR << error_message;
+            resp->setStatusCode(drogon::k500InternalServerError);
+            resp->setBody(error_message);
+          }
           callback(resp);
         } else {
           auto resp = drogon::HttpResponse::newHttpResponse();
@@ -174,4 +186,3 @@ void SpotifyAuthController::redirectToSpotifyAuth(
 }
 
 } // namespace v2
-

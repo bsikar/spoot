@@ -27,6 +27,7 @@ public:
              std::function<void(const drogon::HttpResponsePtr &)> &&callback);
 
 private:
+  std::string access_token;
   std::optional<drogon::HttpRequestPtr>
   makeRequest(const drogon::HttpRequestPtr &req,
               std::function<void(const drogon::HttpResponsePtr &)> callback,
