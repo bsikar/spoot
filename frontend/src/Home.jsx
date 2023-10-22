@@ -1,4 +1,5 @@
 import React from "react";
+import Header from "./Header";
 
 const Home = () => {
   const handleButtonClick = (difficulty) => {
@@ -7,13 +8,7 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <h1>Welcome</h1>
-      <p>
-        This game will customize a series of questions depending on your music
-        taste.{" "}
-      </p>
-      <p>You will select between two choices and gradually work your way up.</p>
-      <p>Click below to login and begin the game!</p>
+      <Header type="Welcome" />
       <div className="buttons-row">
         <button
           className="welcomeButton"
