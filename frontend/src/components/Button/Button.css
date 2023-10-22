@@ -41,3 +41,7 @@
   box-shadow: none;
   transform: translateY(0);
 }
+
+.img {
+  width: 15rem;
+}

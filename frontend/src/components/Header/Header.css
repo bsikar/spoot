@@ -1,11 +1,11 @@
 .header h1 {
     text-align: center;
     font-size: 50px;
-    font-weight: 700; color:#91C499;
+    font-weight: 700; color:hsl(129, 30%, 67%);
     text-transform: uppercase;
     word-spacing: 1px; letter-spacing:2px;
-    /* font: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol" */
-  }
+    margin-top: 100px;
+}
 .header h1 span {
     margin-top: 40px;
     text-transform: none;
@@ -25,4 +25,8 @@
     left: 50%;
     margin-left: -30px;
     background-color: #dfdfdf;
+}
+
+.p {
+    
 }
