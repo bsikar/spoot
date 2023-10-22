@@ -7,6 +7,8 @@
 
 namespace v1 {
 
+const std::string redirect_uri = "http://localhost:3000/play";
+
 void clearUserColors(void) {
   try {
     auto redis_client = drogon::app().getRedisClient();
@@ -154,7 +156,6 @@ void SpotifyAuthController::redirectToSpotifyAuth(
     return;
   }
 
-  std::string redirect_uri = "http://localhost:3000/play";
   std::string scopes = "user-top-read";
 
   std::string spotify_auth_url =
@@ -187,21 +188,20 @@ void SpotifyHostController::showSpotifyData(
 
   req2->setContentTypeCode(drogon::CT_APPLICATION_X_FORM);
 
-  std::ostringstream bodyStream;
-  bodyStream << "grant_type=authorization_code";
-  bodyStream << "&redirect_uri="
-             << "http://localhost:3000/play";
-  bodyStream << "&code=" << code;
+  std::ostringstream body_stream;
+  body_stream << "grant_type=authorization_code";
+  body_stream << "&redirect_uri=" << redirect_uri;
+  body_stream << "&code=" << code;
 
-  req2->setBody(bodyStream.str());
+  req2->setBody(body_stream.str());
 
   // Note: Basic Auth setup is a bit different in C++ compared to JS.
   // You'd typically base64 encode the "client_id:client_secret" string and
   // put that into your Authorization header:
-  std::string authHeader =
+  std::string auth_header =
       "Basic " + drogon::utils::base64Encode(getClientIdFromEnv() + ":" +
                                              getClientSecretFromEnv());
-  req2->addHeader("Authorization", authHeader);
+  req2->addHeader("Authorization", auth_header);
 
   client->sendRequest(req2,
                       [callback](drogon::ReqResult result,
@@ -241,7 +241,6 @@ void SpotifyHostController::showTopTracks(
                               const drogon::HttpResponsePtr &response) {
         if (result == drogon::ReqResult::Ok) {
           auto resp = drogon::HttpResponse::newHttpResponse();
-          // Parse the body of the Spotify response into a Json::Value object
           Json::Reader reader;
           Json::Value json_data;
           if (reader.parse(std::string(response->getBody()), json_data)) {
@@ -258,23 +257,14 @@ void SpotifyHostController::showTopTracks(
                 }
               }
             }
-
-            // Convert the artists vector into a string
-            std::string body;
-            for (const auto &artist : artists) {
-              body += "<p>" + artist + "</p>";
-            }
-
-            resp->setBody(body);
           } else {
-            resp->setBody(R"({"error": "Failed to parse Spotify response"})");
+            LOG_ERROR << R"({"error": "Failed to parse Spotify response"})";
           }
-
           callback(resp);
         } else {
           auto resp = drogon::HttpResponse::newHttpResponse();
           resp->setStatusCode(drogon::k500InternalServerError);
-          resp->setBody(R"({"error": "Failed to fetch top tracks"})");
+          LOG_ERROR << R"({"error": "Failed to fetch top tracks"})";
           callback(resp);
         }
       });

@@ -14,8 +14,13 @@ class SpotifyHostController
     : public drogon::HttpController<SpotifyHostController> {
 public:
   METHOD_LIST_BEGIN
+  ADD_METHOD_TO(SpotifyHostController::getSpotCreds, "/get_creds", drogon::Get);
   ADD_METHOD_TO(SpotifyHostController::topArtists, "/top_artists", drogon::Get);
   METHOD_LIST_END
+
+  void
+  getSpotCreds(const drogon::HttpRequestPtr &req,
+               std::function<void(const drogon::HttpResponsePtr &)> &&callback);
 
   void
   topArtists(const drogon::HttpRequestPtr &req,
@@ -28,4 +33,16 @@ private:
               const std::string &path);
 };
 
+class SpotifyAuthController
+    : public drogon::HttpController<SpotifyAuthController> {
+public:
+  METHOD_LIST_BEGIN
+  ADD_METHOD_TO(SpotifyAuthController::redirectToSpotifyAuth, "/login",
+                drogon::Get);
+  METHOD_LIST_END
+
+  void redirectToSpotifyAuth(
+      const drogon::HttpRequestPtr &req,
+      std::function<void(const drogon::HttpResponsePtr &)> &&callback);
+};
 } // namespace v2
