@@ -13,14 +13,24 @@ const Results = () => {
       ? "Congratulations you won!"
       : "Aww, better luck next time!";
 
-  const handlePlayAgain = () => {
-    navigate("/play"); // Redirect to the Play component
+  const handlePlayAgain = (difficulty) => {
+    navigate("/play", { state: { difficulty } });
   };
 
   return (
     <div className="centered">
       <p>{message}</p>
-      <button className="button" onClick={handlePlayAgain}>Play Again</button>
+      <div className="button-group">
+        <button className="button" onClick={() => handlePlayAgain("easy")}>
+          Play Again (Easy)
+        </button>
+        <button className="button" onClick={() => handlePlayAgain("medium")}>
+          Play Again (Medium)
+        </button>
+        <button className="button" onClick={() => handlePlayAgain("hard")}>
+          Play Again (Hard)
+        </button>
+      </div>
     </div>
   );
 };

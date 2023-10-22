@@ -10,10 +10,10 @@ const char *SPOT_USER_URI = "https://accounts.spotify.com";
 const char *SPOT_REDIRECT_URI1 = "http://localhost:5555/get_creds";
 const char *SPOT_REDIRECT_URI2 = "http://localhost:3000/play";
 
-#define SPOT_USER_FULL_REDIRECT_URI(client_id, scopes)                         \
+#define SPOT_USER_FULL_REDIRECT_URI(client_id, scopes, difficulty)             \
   std::string(SPOT_USER_URI) + "/authorize?response_type=code" +               \
       "&client_id=" + client_id + "&scope=" + scopes +                         \
-      "&redirect_uri=" + SPOT_REDIRECT_URI1
+      "&redirect_uri=" + SPOT_REDIRECT_URI1 + "/" + difficulty
 
 std::string getClientIdFromEnv() {
   std::ifstream file(".env");
@@ -82,11 +82,21 @@ void SpotifyHostController::topArtists(
   auto client = HttpClient::newHttpClient(SPOT_API_URI);
   auto copied_callback = callback; // Make a copy of the callback
 
-  auto spotify_req = makeRequest(req, copied_callback,
-                                 "/v1/me/top/artists?"
-                                 "time_range=long_term"
-                                 "&limit=50" // hard coded max
-                                 "&offset=0");
+  std::string time_range = "long_term";
+  int limit = 50;
+  if (difficulty_level == "easy") {
+    time_range = "short_term";
+    limit = 10;
+  } else if (difficulty_level == "medium") {
+    time_range = "medium_term";
+    limit = 30;
+  }
+
+  std::ostringstream oss;
+  oss << "/v1/me/top/artists?"
+      << "time_range=" << time_range << "&limit=" << limit << "&offset=0";
+
+  auto spotify_req = makeRequest(req, copied_callback, oss.str());
   if (!spotify_req) {
     // callback handled in makeRequest
     return;
@@ -142,8 +152,11 @@ void SpotifyHostController::topArtists(
 
 void SpotifyHostController::getSpotCreds(
     const drogon::HttpRequestPtr &req,
-    std::function<void(const drogon::HttpResponsePtr &)> &&callback) {
+    std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+    const std::string &difficulty) {
+  difficulty_level = difficulty;
   LOG_TRACE << "Entering getSpotCreds";
+  LOG_INFO << difficulty_level;
 
   auto code = req->getParameter("code");
   if (code.empty()) {
@@ -166,7 +179,8 @@ void SpotifyHostController::getSpotCreds(
   std::ostringstream body_stream;
   body_stream << "grant_type=authorization_code";
   body_stream << "&code=" << code;
-  body_stream << "&redirect_uri=" << SPOT_REDIRECT_URI1;
+  body_stream << "&redirect_uri=" << SPOT_REDIRECT_URI1 << "/"
+              << difficulty_level;
   token_request->setBody(body_stream.str());
 
   std::string auth_header =
@@ -222,8 +236,12 @@ void SpotifyAuthController::redirectToSpotifyAuth(
     return;
   }
 
+  auto diff = req->getParameter("difficulty");
+  LOG_INFO << diff;
   std::string scopes = "user-top-read";
-  std::string spotify_auth_url = SPOT_USER_FULL_REDIRECT_URI(client_id, scopes);
+  std::string spotify_auth_url =
+      SPOT_USER_FULL_REDIRECT_URI(client_id, scopes, diff);
+  LOG_INFO << spotify_auth_url;
   auto resp = drogon::HttpResponse::newRedirectionResponse(spotify_auth_url);
   callback(resp);
 }

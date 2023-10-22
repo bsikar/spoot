@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import "./css/Play.css";
 
@@ -14,6 +15,8 @@ function shuffleArray(array) {
 }
 
 const Play = () => {
+  const location = useLocation();
+  const difficulty = location.state?.difficulty;
   const [jsonData, setJsonData] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -25,13 +28,16 @@ const Play = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("http://localhost:5555/top_artists");
+        const s = `http://localhost:5555/top_artists?difficulty=${difficulty}`;
+        const response = await fetch(s);
+        console.log(s);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
+        console.log(data);
 
         setJsonData(shuffleArray(data));
       } catch (error) {
@@ -42,14 +48,14 @@ const Play = () => {
     };
 
     fetchData();
-  }, []);
+  }, [difficulty]);
 
   const handleClick = async (res) => {
     if (jsonData.length < 2) return;
 
     if (res === false || jsonData.length === 2) {
       setShowPopularity(true);
-      await new Promise((resolve) => setTimeout(resolve, 4000));
+      await new Promise((resolve) => setTimeout(resolve, 2500));
       navigate("/results", { state: { res } });
     } else {
       const lessPopularIndex = pops[0] > pops[1] ? 1 : 0;

@@ -12,15 +12,16 @@ class SpotifyHostController
     : public drogon::HttpController<SpotifyHostController> {
 public:
   METHOD_LIST_BEGIN
-  ADD_METHOD_TO(SpotifyHostController::getSpotCreds, "/get_creds", drogon::Get,
-                drogon::Options);
+  ADD_METHOD_TO(SpotifyHostController::getSpotCreds, "/get_creds/{1}",
+                drogon::Get, drogon::Options);
   ADD_METHOD_TO(SpotifyHostController::topArtists, "/top_artists", drogon::Get,
                 drogon::Options);
   METHOD_LIST_END
 
   void
   getSpotCreds(const drogon::HttpRequestPtr &req,
-               std::function<void(const drogon::HttpResponsePtr &)> &&callback);
+               std::function<void(const drogon::HttpResponsePtr &)> &&callback,
+               const std::string &difficulty);
 
   void
   topArtists(const drogon::HttpRequestPtr &req,
@@ -28,6 +29,7 @@ public:
 
 private:
   std::string access_token;
+  std::string difficulty_level;
   std::optional<drogon::HttpRequestPtr>
   makeRequest(const drogon::HttpRequestPtr &req,
               std::function<void(const drogon::HttpResponsePtr &)> callback,
