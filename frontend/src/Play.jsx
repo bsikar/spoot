@@ -84,30 +84,35 @@ const Play = () => {
       : [0, 0];
 
   return (
-    <div className="container">
-      <div className="button-container">
-        <button
-          className="button"
-          onClick={() => handleClick(pops[0] >= pops[1])}
-        >
-          <img className="img" src={images[0]} alt={artists[0]} />
-
-          <p>{artists[0]}</p>
-        </button>
-        <div className="green-square">{showPopularity ? pops[0] : null}</div>
-      </div>
-      {jsonData[1] && (
+    <div>
+      <h1 className="question-text"> Who do you think is more popular? </h1>
+      <div className="container">
         <div className="button-container">
           <button
             className="button"
-            onClick={() => handleClick(pops[1] >= pops[0])}
+            onClick={() => handleClick(pops[0] >= pops[1])}
           >
-            <img className="img" src={images[1]} alt={artists[1]} />
-            <p>{artists[1]}</p>
+            <img className="img" src={images[0]} alt={artists[0]} />
+
+            <p>{artists[0]}</p>
           </button>
-          <div className="green-square">{showPopularity ? pops[1] : null}</div>
+          <div className="green-square">{showPopularity ? pops[0] : null}</div>
         </div>
-      )}
+        {jsonData[1] && (
+          <div className="button-container">
+            <button
+              className="button"
+              onClick={() => handleClick(pops[1] >= pops[0])}
+            >
+              <img className="img" src={images[1]} alt={artists[1]} />
+              <p>{artists[1]}</p>
+            </button>
+            <div className="green-square">
+              {showPopularity ? pops[1] : null}
+            </div>
+          </div>
+        )}
+      </div>
     </div>
   );
 };

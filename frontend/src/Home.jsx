@@ -8,6 +8,12 @@ const Home = () => {
   return (
     <div className="home-container">
       <h1>Welcome</h1>
+      <p>
+        This game will customize a series of questions depending on your music
+        taste.{" "}
+      </p>
+      <p>You will select between two choices and gradually work your way up.</p>
+      <p>Click below to login and begin the game!</p>
       <div className="buttons-row">
         <button
           className="welcomeButton"
